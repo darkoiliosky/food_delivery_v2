@@ -1,0 +1,119 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model deliveries {
+  id               Int       @id @default(autoincrement())
+  order_id         Int?
+  delivery_user_id Int?
+  status           String?   @default("pending") @db.VarChar(20)
+  accepted_at      DateTime? @db.Timestamp(6)
+  delivered_at     DateTime? @db.Timestamp(6)
+  location         String?   @db.VarChar(255)
+  users            users?    @relation(fields: [delivery_user_id], references: [id], onUpdate: NoAction)
+  orders           orders?   @relation(fields: [order_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model menu_items {
+  id          Int           @id @default(autoincrement())
+  vendor_id   Int?
+  name        String        @db.VarChar(100)
+  price       Decimal       @db.Decimal(10, 2)
+  image_url   String?
+  category    String?       @db.VarChar(50)
+  ingredients String[]
+  addons      String[]
+  vendors     vendors?      @relation(fields: [vendor_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  order_items order_items[]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model order_items {
+  id           Int         @id @default(autoincrement())
+  order_id     Int?
+  vendor_id    Int?
+  menu_item_id Int?
+  quantity     Int
+  item_price   Decimal     @db.Decimal(10, 2)
+  created_at   DateTime?   @default(now()) @db.Timestamp(6)
+  menu_items   menu_items? @relation(fields: [menu_item_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  orders       orders?     @relation(fields: [order_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  vendors      vendors?    @relation(fields: [vendor_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model order_vendors {
+  id         Int       @id @default(autoincrement())
+  order_id   Int?
+  vendor_id  Int?
+  subtotal   Decimal   @db.Decimal(10, 2)
+  status     String?   @default("pending") @db.VarChar(20)
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  orders     orders?   @relation(fields: [order_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  vendors    vendors?  @relation(fields: [vendor_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model orders {
+  id            Int             @id @default(autoincrement())
+  user_id       Int?
+  total_price   Decimal         @db.Decimal(10, 2)
+  status        String?         @default("pending") @db.VarChar(20)
+  created_at    DateTime?       @default(now()) @db.Timestamp(6)
+  deliveries    deliveries[]
+  order_items   order_items[]
+  order_vendors order_vendors[]
+  users         users?          @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model users {
+  id                 Int          @id @default(autoincrement())
+  name               String       @db.VarChar(100)
+  lastname           String       @db.VarChar(100)
+  email              String       @unique @db.VarChar(150)
+  phone              String       @unique @db.VarChar(20)
+  password           String
+  role               String       @db.VarChar(20)
+  is_verified        Boolean?     @default(false)
+  created_at         DateTime?    @default(now()) @db.Timestamp(6)
+  verification_token String?      @db.VarChar(255)
+  token_expires      DateTime?    @db.Timestamp(6)
+  deliveries         deliveries[]
+  orders             orders[]
+  vendors            vendors[]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model vendor_working_hours {
+  id          Int      @id @default(autoincrement())
+  vendor_id   Int
+  day_of_week Int
+  open_time   DateTime @db.Time(6)
+  close_time  DateTime @db.Time(6)
+
+  vendors     vendors @relation(fields: [vendor_id], references: [id], onDelete: Cascade)
+
+  @@unique([vendor_id, day_of_week])
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model vendors {
+  id                   Int                    @id @default(autoincrement())
+  name                 String                 @db.VarChar(100)
+  type                 String                 @db.VarChar(50)
+  location             String?                @db.VarChar(255)
+  image_url            String?
+  owner_id             Int?
+  menu_items           menu_items[]
+  order_items          order_items[]
+  order_vendors        order_vendors[]
+  vendor_working_hours vendor_working_hours[]
+  users                users?                 @relation(fields: [owner_id], references: [id], onUpdate: NoAction)
+}

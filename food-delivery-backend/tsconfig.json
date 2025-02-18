@@ -1,19 +1,19 @@
 {
   "compilerOptions": {
     "module": "ESNext", // Use ESNext for module resolution
-    "moduleResolution": "node", // Use Node.js-style module resolution
+    "moduleResolution": "node", // Node.js-style module resolution
     "target": "ESNext", // Use modern ECMAScript features
-    "esModuleInterop": true, // Ensure compatibility with CommonJS modules
-    "skipLibCheck": true, // Skip checking of library types for faster builds
-    "allowJs": true, // Allow JavaScript files (if needed)
+    "esModuleInterop": true, // Allow compatibility with CommonJS modules
+    "skipLibCheck": true, // Skip checking library types for faster builds
+    "allowJs": true, // Allow JavaScript files (optional)
     "resolveJsonModule": true, // Allow importing JSON files
+    "noEmit": true, // Do not emit JavaScript files
+    "allowImportingTsExtensions": true, // Allow imports with .ts extensions
     "outDir": "./dist", // Output directory for compiled files
     "baseUrl": "./", // Base directory for module resolution
     "paths": {
       "*": ["node_modules/*"] // Resolve modules from node_modules
-    },
-    "allowImportingTsExtensions": true, // Allow importing TypeScript extensions
-    "noEmit": true // Disable emitting JS files
+    }
   },
   "include": ["src/**/*.ts"], // Include all TypeScript files
   "exclude": ["node_modules"] // Exclude node_modules

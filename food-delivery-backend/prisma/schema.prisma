@@ -74,20 +74,22 @@ model orders {
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model users {
-  id                 Int          @id @default(autoincrement())
-  name               String       @db.VarChar(100)
-  lastname           String       @db.VarChar(100)
-  email              String       @unique @db.VarChar(150)
-  phone              String       @unique @db.VarChar(20)
-  password           String
-  role               String       @db.VarChar(20)
-  is_verified        Boolean?     @default(false)
-  created_at         DateTime?    @default(now()) @db.Timestamp(6)
-  verification_token String?      @db.VarChar(255)
-  token_expires      DateTime?    @db.Timestamp(6)
-  deliveries         deliveries[]
-  orders             orders[]
-  vendors            vendors[]
+  id                  Int          @id @default(autoincrement())
+  name                String       @db.VarChar(100)
+  lastname            String       @db.VarChar(100)
+  email               String       @unique @db.VarChar(150)
+  phone               String       @unique @db.VarChar(20)
+  password            String
+  role                String       @db.VarChar(20)
+  is_verified         Boolean?     @default(false)
+  created_at          DateTime?    @default(now()) @db.Timestamp(6)
+  verification_token  String?      @db.VarChar(255)
+  token_expires       DateTime?    @db.Timestamp(6)
+  reset_token         String?
+  reset_token_expires DateTime?
+  deliveries          deliveries[]
+  orders              orders[]
+  vendors             vendors[]
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
